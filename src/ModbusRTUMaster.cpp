@@ -147,14 +147,14 @@ void ModbusRTUMaster::loop() {
       if (_stream->available()) {
         clearBuffer();  // Clear invalid or stale data
         _lastByteTime = micros();
-      } else if (ut::onTimeUs(_lastByteTime, _frameTimeout, false)) {
+      } else if (on_us(&_lastByteTime, _frameTimeout, false)) {
         _state = MB_ASYNC_STATE_IDLE;
       }
       break;
     }
     case MB_ASYNC_STATE_IDLE: {
       if (!_queue.isEmpty()) {
-        if (ut::onTimeUs(_lastByteTime, _frameTimeout, false)) {
+        if (on_us(&_lastByteTime, _frameTimeout, false)) {
           if (_queue.readReady(_currentADU)) {
             send(_currentADU->_TXADURTUframe, _currentADU->getTXADULen());
             // printBuffer(_currentADU->_TXADURTUframe, _currentADU->getTXADULen());
@@ -193,7 +193,7 @@ void ModbusRTUMaster::loop() {
           _state = MB_ASYNC_STATE_HEADCHEKD;
         }
       } else {  // nothing received jet, chek timeout
-        if (ut::onTimeUs(_lastByteTime, _responseTimeout, false)) {
+        if (on_us(&_lastByteTime, _responseTimeout, false)) {
           if (clearBuffer()) {
             _state = MB_ASYNC_STATE_BUFFER_CLEAR;
           } else {
@@ -231,7 +231,7 @@ void ModbusRTUMaster::loop() {
         reset();
         return;
       } else {  // Chek byte timeout but only if nothing received jet
-        if (_currentADU->_responseLen != 0 && ut::onTimeUs(_lastByteTime, _byteTimeout, false)) {
+        if (_currentADU->_responseLen != 0 && on_us(&_lastByteTime, _byteTimeout, false)) {
           if (clearBuffer()) {
             _state = MB_ASYNC_STATE_BUFFER_CLEAR;
           } else {

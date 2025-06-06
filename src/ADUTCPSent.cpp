@@ -39,7 +39,7 @@ bool ADUTCPSent::read(ADUTCP*& adu, uint16_t tranID) {
 
 bool ADUTCPSent::readNextTimeout(ADUTCP*& adu, uint32_t timeout) {
   for (uint8_t i = 0; i < _size; ++i) {
-    if (_adu[i] && ut::onTimeMs(_adu[i]->_sentTime, timeout, false)) {
+    if (_adu[i] && on_ms(&_adu[i]->_sentTime, timeout, false)) {
       adu = _adu[i];
       _adu[i] = nullptr;
       return true;

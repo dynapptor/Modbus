@@ -23,7 +23,7 @@ void ClientItem::set(uint8_t id, bool allAtOnce, uint8_t maxCount, Client* clien
 
 bool ClientItem::reconnect() {
   if (!_client->connected()) {
-    if (ut::onTimeMs(_lastReconnectAttempt, _reconnectInterval, true)) {
+    if (on_ms(&_lastReconnectAttempt, _reconnectInterval, true)) {
       if (!_client->connect(_ip, _port)) {
         return false;
       }
@@ -107,7 +107,7 @@ void ClientItem::loop() {
       adu->callCallback();
     }
   } else if (_currentADU) {
-    if (ut::onTimeMs(_currentADU->_sentTime, _responseTimeout, false)) {
+    if (on_ms(&_currentADU->_sentTime, _responseTimeout, false)) {
       _currentADU->_err = MB_EX_LIB_RESPONSE_TIMEOUT;
       _currentADU->callCallback();
       reset();

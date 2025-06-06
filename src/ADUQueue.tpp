@@ -50,7 +50,7 @@ bool ADUQueue<T>::readReady(T*& item) {
   uint32_t minDelay = UINT32_MAX;  // Track smallest delay
   for (uint8_t i = 0; i < _count; ++i) {
     T* candidate = _items[current];
-    if (candidate && ut::onTimeMs(candidate->_queuedTime, candidate->_delayToSend, false)) {
+    if (candidate && on_ms(&candidate->_queuedTime, candidate->_delayToSend, false)) {
       if (candidate->_delayToSend < minDelay) {
         minDelay = candidate->_delayToSend;
         readyIndex = current;
@@ -73,7 +73,7 @@ bool ADUQueue<T>::hasReady() const {
   if (_count == 0) return false;
   uint8_t current = _head;
   for (uint8_t i = 0; i < _count; ++i) {
-    if (_items[current] && ut::onTimeMs(_items[current]->_queuedTime, _items[current]->_delayToSend, false)) {
+    if (_items[current] && on_ms(&_items[current]->_queuedTime, _items[current]->_delayToSend, false)) {
       return true;
     }
     current = (current + 1) % _queueSize;
